@@ -19,11 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'otp.verified' => \App\Http\Middleware\EnsureOtpVerified::class,
         ]);
 
-$middleware->append(
-        \App\Http\Middleware\AccessLogger::class
-    );
-
-
+        $middleware->append(\App\Http\Middleware\AccessLogger::class);
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })
 
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PostController extends Controller
@@ -134,6 +135,15 @@ class PostController extends Controller
                 'Unauthorized action.'
             );
         }
+
+	Log::info('USER_DELETE_POST', [
+    	    'user_id' => Auth::id(),
+    	    'user_email' => Auth::user()->email,
+    	    'post_id' => $post->id,
+    	    'content' => $post->content,
+    	    'ip' => request()->ip(),
+    	    'time' => now()->toDateTimeString(),
+	]);
 
         $post->delete();
 

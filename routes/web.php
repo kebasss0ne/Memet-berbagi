@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DatabaseBackupController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Post;
 use App\Models\AccessLog;
@@ -157,6 +158,17 @@ Route::middleware(['auth','admin','hide.map'])->group(function () {
             abort(403);
         }
 
+	 Log::info('DELETE_USER', [
+              'deleted_by' => Auth::user()->email,
+              'deleted_by_id' => Auth::id(),
+              'deleted_user_id' => $user->id,
+              'deleted_user_name' => $user->name,
+              'deleted_user_email' => $user->email,
+              'ip' => $request->ip(),
+              'time' => now()->toDateTimeString(),
+    	]);
+
+
         // 🔥 HAPUS SEMUA POST USER DULU
         $user->posts()->delete();
 
@@ -167,7 +179,19 @@ Route::middleware(['auth','admin','hide.map'])->group(function () {
 
     })->name('admin.user.delete');
 
-    Route::delete('/admin/post/{post}', function(Post $post){
+    Route::delete('/admin/post/{post}', function(Request $request, Post $post){
+
+    Log::info('DELETE_POST', [
+        'deleted_by' => Auth::user()->email,
+        'deleted_by_id' => Auth::id(),
+        'post_id' => $post->id,
+        'post_owner_id' => $post->user_id,
+        'post_owner_name' => $post->user->name ?? null,
+        'post_owner_email' => $post->user->email ?? null,
+        'content' => $post->content,
+        'ip' => $request->ip(),
+        'time' => now()->toDateTimeString(),
+    ]);
 
         $post->delete();
 
